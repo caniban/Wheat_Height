@@ -1,0 +1,53 @@
+seed: 42
+cv_folds: 5
+n_features_to_select: 19
+data_path: "data/crop_heights.xlsx"
+results_dir: "results"
+mlflow_tracking_uri: "sqlite:///mlruns.db"
+experiment_name: "Crop_Height_SAR_Estimation"
+
+feature_selection_methods:
+  - "ALL"
+  - "MI"
+  - "LASSO"
+  - "SHAP_RFE"
+
+models:
+  - "RandomForest"
+  - "XGBoost"
+  - "LightGBM"
+
+ablation_sets:
+  - name: "Only C-Band (Sentinel-1)"
+    columns_prefix:
+      - "S1"
+  - name: "Only X-Band (PAZ & TDX)"
+    columns_prefix:
+      - "PAZ_"
+      - "TDX_"
+  - name: "Combined (C-Band + X-Band)"
+    columns_prefix:
+      - "S1"
+      - "PAZ_"
+      - "TDX_"
+
+param_grids:
+  RandomForest:
+    n_estimators: [100, 200, 300]
+    max_depth: [10, 20, 30, null]
+    min_samples_split: [2, 5, 10]
+
+  XGBoost:
+    n_estimators: [100, 200, 300]
+    learning_rate: [0.01, 0.05, 0.1]
+    max_depth: [3, 5, 7]
+    subsample: [0.8, 1.0]
+    colsample_bytree: [0.8, 1.0]
+
+  LightGBM:
+    n_estimators: [100, 200, 300]
+    learning_rate: [0.01, 0.05, 0.1]
+    num_leaves: [30, 50, 70]
+    boosting_type: ["gbdt", "dart"]
+
+test_size: 0.3
